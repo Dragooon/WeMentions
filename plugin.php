@@ -12,6 +12,16 @@
  */
 
 /**
+ * Hook callback for post_form_pre
+ *
+ * @return void
+ */
+function wementions_post_form_pre()
+{
+    add_plugin_js_file('Dragooon:WeMentions', 'plugin.js');
+}
+
+/**
  * Hook callback for create_post_before and modify_post_before
  * Parses a post, actually looks for mentions and issues notifications
  *
