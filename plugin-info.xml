@@ -8,8 +8,8 @@
   <hooks>
     <function point="notification_callback" function="wementions_notification_callback" filename="$plugindir/plugin" />
     <function point="post_form_pre" function="wementions_post_form_pre" filename="$plugindir/plugin" />
-    <function point="create_post_after" function="wementions_post" filename="$plugindir/plugin" />
-    <function point="modify_post_after" function="wementions_post" filename="$plugindir/plugin" />
+    <function point="create_post_before" function="wementions_post" filename="$plugindir/plugin" />
+    <function point="modify_post_before" function="wementions_post" filename="$plugindir/plugin" />
   </hooks>
 
   <bbcodes>
