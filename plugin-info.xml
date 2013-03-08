@@ -12,6 +12,7 @@
     <function point="modify_post_before" function="wementions_post" filename="$plugindir/plugin" />
     <function point="create_post_after" function="wementions_create_post_after" filename="$plugindir/plugin" />
     <function point="display_message_list" function="wementions_display_message_list" filename="$plugindir/plugin" />
+    <function point="load_permissions" function="wementions_load_permissions" filename="$plugindir/plugin" />
   </hooks>
 
   <bbcodes>

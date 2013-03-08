@@ -22,6 +22,18 @@ function wementions_post_form_pre()
 }
 
 /**
+ * Hook callback for load_permissions
+ *
+ * @param array &$permissionGroups
+ * @param array &$permissionList
+ * @return void
+ */
+function wementions_load_permissions(&$permissionGroups, &$permissionList)
+{
+    $permissionList['board']['mention_member'] = array(false, 'post', 'mention');
+}
+
+/**
  * Hook callback for create_post_before and modify_post_before
  * Parses a post, actually looks for mentions and issues notifications
  *
