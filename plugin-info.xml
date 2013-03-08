@@ -16,7 +16,7 @@
 
   <bbcodes>
     <bbcode tag="member" type="unparsed_equals">
-      <before-code><![CDATA[<a href="<URL>?action=profile;u=$1">@]]></before-code>
+      <before-code><![CDATA[<a href="<URL>?action=profile;u=$1" class="mention">@]]></before-code>
       <after-code><![CDATA[</a>]]></after-code>
     </bbcode>
   </bbcodes>
