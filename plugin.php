@@ -40,9 +40,9 @@ function wementions_load_permissions(&$permissionGroups, &$permissionList)
  * Names are tagged by "@<username>" format in post, but they can contain
  * any type of character up to 60 characters length. So we extract, starting from @
  * up to 60 characters in length (or if we encounter another @) and make
- * several combination of strings after splitting spaces by having the first word,
- * first and second word, first, second and third word and so on and search every
- * name.
+ * several combination of strings after splitting it by anything that's not a word and join
+ * by having the first word, first and second word, first, second and third word and so on and
+ * search every name.
  *
  * One potential problem with this is something like "@Admin Space" can match
  * "Admin Space" as well as "Admin", so we sort by length in descending order.
@@ -51,8 +51,6 @@ function wementions_load_permissions(&$permissionGroups, &$permissionList)
  *
  * Names having "@" in there names are expected to be escaped as "\@",
  * otherwise it'll break seven ways from sunday
- *
- * Also, the entire thing is case insensitive (seemed like a better idea)
  *
  * @param array &$msgOptions
  * @param array &$topicOptions
@@ -63,36 +61,30 @@ function wementions_load_permissions(&$permissionGroups, &$permissionList)
 function wementions_post(&$msgOptions, &$topicOptions, &$posterOptions, $new_topic = false)
 {
     // Attempt to match all the @<username> type mentions in the post
-    preg_match_all('/@(([^@\\\\]|\\\@){1,60})/', $msgOptions['body'], $matches);
+    preg_match_all('/@(([^@\\\\]|\\\@){1,60})/', strip_tags(str_replace('\@', '@', $msgOptions['body'])), $matches);
 
     // Names can have spaces, or they can't...we try to match every possible
     if (empty($matches[1]) || !allowedTo('mention_member'))
         return;
 
-    // Names can have spaces, or they can't...we try to match every possible
+    // Names can have spaces, other breaks, or they can't...we try to match every possible
     // combination.
     $names = array();
     foreach ($matches[1] as $match)
     {
-        $match = explode(' ', $match);
-        for ($i = 0; $i < count($match); $i++)
-        {
-            $k = count($names);
-            $names[$k] = array();
+        $match = preg_split('/([^\w])/', $match, -1, PREG_SPLIT_DELIM_CAPTURE);
 
-            for ($j = 0; $j <= $i; $j++)
-                if (strlen(trim($match[$j])) > 0)
-                    $names[$k][] = $match[$j];
-
-            $names[$k] = str_replace('\@', '@', strtolower(implode(' ', $names[$k])));
-        }
+        for ($i = 1; $i <= count($match); $i++)
+            $names[] = implode('', array_slice($match, 0, $i));
     }
+
+    $names = array_unique(array_map('trim', $names));
 
     // Attempt to fetch all the valid usernames
     $request = wesql::query('
         SELECT id_member, real_name
         FROM {db_prefix}members
-        WHERE LOWER(real_name) IN ({array_string:names})
+        WHERE real_name IN ({array_string:names})
         ORDER BY LENGTH(real_name) DESC
         LIMIT {int:count}',
         array(
@@ -108,7 +100,6 @@ function wementions_post(&$msgOptions, &$topicOptions, &$posterOptions, $new_top
             'original_name' => $row['real_name'],
         );
     wesql::free_result($request);
-
     if (empty($members))
         return;
 
@@ -116,10 +107,10 @@ function wementions_post(&$msgOptions, &$topicOptions, &$posterOptions, $new_top
     $msgOptions['mentions'] = array();
     foreach ($members as $member)
     {
-        if (stripos($msgOptions['body'], '@' . $member['real_name']) === false)
+        if (strpos($msgOptions['body'], '@' . $member['real_name']) === false)
             continue;
 
-        $msgOptions['body'] = str_ireplace('@' . $member['real_name'], '[member=' . $member['id'] . ']' . $member['original_name'] . '[/member]', $msgOptions['body']);
+        $msgOptions['body'] = str_replace('@' . $member['real_name'], '[member=' . $member['id'] . ']' . $member['original_name'] . '[/member]', $msgOptions['body']);
 
         // Why would an idiot mention themselves?
         if (we::$id == $member['id'])
