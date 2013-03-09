@@ -152,9 +152,12 @@ $(function()
                                     })
                                     .click(function()
                                     {
-                                        $editor.val(val.substr(0, start) + $(this).text() + ' ' + val.substr(pos + 1));
+                                        // Escape @ to \@
+                                        var name = $(this).text().replace('@', '\\@');
 
-                                        var caretPos = start + $(this).text().length + 1;
+                                        $editor.val(val.substr(0, start) + name + ' ' + val.substr(pos + 1));
+
+                                        var caretPos = start + name.length + 1;
                                         $editor.selectRange(caretPos, caretPos);
 
                                         $container.remove();
