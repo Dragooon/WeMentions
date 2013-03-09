@@ -145,7 +145,7 @@ function wementions_display_message_list(&$messages, &$times, &$all_posters)
 /**
  * Notifier interface
  */
-class Mentions_Notifier implements Notifier
+class Mentions_Notifier extends Notifier
 {
     /**
      * Constructor, loads this plugin's language
@@ -224,18 +224,6 @@ class Mentions_Notifier implements Notifier
         global $txt;
 
         return array($txt['wementions_title'], $txt['wementions_desc'], array());
-    }
-
-    /**
-     * Callback for profile save
-     *
-     * @access public
-     * @param int $id_member The ID of the member whose profile is currently being accessed
-     * @param array $settings A key => value pair of the fed settings
-     * @return void
-     */
-    public function saveProfile($id_member, array $settings)
-    {
     }
 
     /**
