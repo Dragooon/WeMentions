@@ -236,9 +236,10 @@ class Mentions_Notifier extends Notifier
      * @access public
      * @param Notification $notification
      * @param array &$data
+     * @param array &$email_data
      * @return bool
      */
-    public function handleMultiple(Notification $notification, array &$data)
+    public function handleMultiple(Notification $notification, array &$data, array &$email_data)
     {
         return false;
     }
@@ -262,9 +263,10 @@ class Mentions_Notifier extends Notifier
      *
      * @access public
      * @param Notification $notification
+     * @param array $email_data
      * @return array(subject, body)
      */
-    public function getEmail(Notification $notification)
+    public function getEmail(Notification $notification, array $email_data)
     {
         global $txt;
 
