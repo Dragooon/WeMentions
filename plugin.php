@@ -262,10 +262,9 @@ class Mentions_Notifier extends Notifier
      *
      * @access public
      * @param Notification $notification
-     * @param array $email_data
      * @return array(subject, body)
      */
-    public function getEmail(Notification $notification, array $email_data)
+    public function getEmail(Notification $notification)
     {
         global $txt;
 
