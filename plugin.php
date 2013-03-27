@@ -39,7 +39,7 @@ function wementions_load_permissions(&$permissionGroups, &$permissionList)
  *
  * Names are tagged by "@<username>" format in post, but they can contain
  * any type of character up to 60 characters length. So we extract, starting from @
- * up to 60 characters in length (or if we encounter another @) and make
+ * up to 60 characters in length (or if we encounter another @ or a line break) and make
  * several combination of strings after splitting it by anything that's not a word and join
  * by having the first word, first and second word, first, second and third word and so on and
  * search every name.
@@ -60,8 +60,11 @@ function wementions_load_permissions(&$permissionGroups, &$permissionList)
  */
 function wementions_post(&$msgOptions, &$topicOptions, &$posterOptions, $new_topic = false)
 {
+    // Undo some of the preparse code action
+    $body = preg_replace('~<br\s*/?\>~', "\n", str_replace('&nbsp;', ' ', $msgOptions['body']));
+
     // Attempt to match all the @<username> type mentions in the post
-    preg_match_all('/@(([^@\\\\]|\\\@){1,60})/', strip_tags(str_replace('\@', '@', $msgOptions['body'])), $matches);
+    preg_match_all('/@(([^@\n\\\\]|\\\@){1,60})/', strip_tags($body), $matches);
 
     // Names can have spaces, or they can't...we try to match every possible
     if (empty($matches[1]) || !allowedTo('mention_member'))
@@ -75,7 +78,7 @@ function wementions_post(&$msgOptions, &$topicOptions, &$posterOptions, $new_top
         $match = preg_split('/([^\w])/', $match, -1, PREG_SPLIT_DELIM_CAPTURE);
 
         for ($i = 1; $i <= count($match); $i++)
-            $names[] = implode('', array_slice($match, 0, $i));
+            $names[] = str_replace('\@', '@', implode('', array_slice($match, 0, $i)));
     }
 
     $names = array_unique(array_map('trim', $names));
